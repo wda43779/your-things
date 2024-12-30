@@ -28,14 +28,13 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
-    // allowRunningInsecureContent: process.env.NODE_ENV === "development",
   });
   if (process.env.NODE_ENV === "development") {
     mainWindow.loadURL("http://localhost:5173/");
   } else {
     mainWindow.loadFile("index.html");
   }
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   mainWindow.on("closed", () => {
     mainWindow = null;
   });

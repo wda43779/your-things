@@ -1,0 +1,6 @@
+.highlight-content {
+  background-color: #fde047; /* 黄色背景 */
+  border-radius: 4px; /* 圆角 */
+  padding: 2px 4px; /* 内边距 */
+  color: inherit; /* 保持文本颜色不变 */
+}

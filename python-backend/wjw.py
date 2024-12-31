@@ -1,4 +1,4 @@
-# Filename: script.sql
+# Filename: wjw.py
 # Author: wjw
 # Description: make index and save to database
 

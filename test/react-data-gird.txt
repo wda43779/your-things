@@ -1,0 +1,29 @@
+react-data-grid  
+npm-badge type-badge size-badge codecov-badge ci-badge
+
+Features
+React 18.0+ support
+Evergreen browsers and server-side rendering support
+Tree-shaking support and only one npm dependency to keep your bundles slim
+Great performance thanks to virtualization: columns and rows outside the viewport are not rendered
+Strictly typed with TypeScript
+Keyboard accessibility
+Light and dark mode support out of the box. The light or dark themes can be enforced using the rdg-light or rdg-dark classes.
+Frozen columns
+Column resizing
+Multi-column sorting
+Click on a sortable column header to toggle between its ascending/descending sort order
+Ctrl+Click / Meta+Click to sort an additional column
+Column spanning
+Column grouping
+Row selection
+Row grouping
+Summary rows
+Dynamic row heights
+No rows fallback
+Cell formatting
+Cell editing
+Cell copy / pasting
+Cell value dragging / filling
+Customizable Renderers
+Right-to-left (RTL) support. We recommend using Firefox as Chrome has a bug with frozen columns.

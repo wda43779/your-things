@@ -11,9 +11,14 @@ const {
 const path = require("node:path");
 const fs = require("node:fs/promises");
 const { spawn } = require("node:child_process");
+const { app } = require("electron");
+
+app.getFileIcon = (path) => {
+  return nativeImage.createFromPath(path);
+};
+
 
 const searchPy = (text) => {
-  const pythonScriptPath = "path/to/your_script.py";
 
   const res = new Promise((resolve, reject) => {
     // 启动 Python 脚本
@@ -45,24 +50,24 @@ const searchPy = (text) => {
   return res;
 };
 
-const indexPy = (text) => {
-  const pythonScriptPath = "path/to/your_script.py";
-
+const indexPy = () => {
   const res = new Promise((resolve, reject) => {
     // 启动 Python 脚本
     let pythonLoc =
       process.platform === "win32"
         ? path.join(__dirname, "backend/env/Scripts/python.exe")
         : path.join(__dirname, "backend/env/bin/python");
-    const pythonProcess = spawn(pythonLoc, ["backend/index.py"]);
+    const pythonProcess = spawn(pythonLoc, ["backend/wjw.py"]);
 
     let outputs = "";
     pythonProcess.stdout.on("data", (data) => {
+      console.log(data.toString());
       outputs += data;
     });
 
     let errors = "";
     pythonProcess.stderr.on("data", (data) => {
+      console.log(data.toString());
       errors += data;
     });
 
@@ -111,17 +116,18 @@ async function searchByFilename(dirPath, text) {
   return results;
 }
 
-// 每秒启动索引
-let index = 0;
+// 每10秒启动索引
 let intervalId = 0;
 function indexer() {
   intervalId = setInterval(() => {
-    index++;
-  }, 1000);
+    indexPy()
+  }, 60*1000);
 }
 function exitIndexer() {
   clearInterval(intervalId);
 }
+
+indexer();
 
 let mainWindow = null;
 function createWindow() {

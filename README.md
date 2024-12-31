@@ -1,50 +1,22 @@
-# React + TypeScript + Vite
+# Your things - a local file searcher gui with indexed full-text search
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+`Your Things` is a powerful local file searcher GUI built using Electron RISC-V port, React, and React Data Grid. It combines advanced full-text search capabilities with efficient data persistence using SQLite. The application leverages BERT and FAISS for natural language processing and ranking, providing users with a seamless and intelligent search experience.
 
-Currently, two official plugins are available:
+## Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. Electron RISC-V Port + React + React Data Grid GUI
+- **Electron RISC-V Port**:  The application is built on Electron, ported to RISC-V architecture (https://github.com/riscv-forks/electron), ensuring cross-platform compatibility and performance optimization for RISC-V systems.
+- **React**: The user interface is developed using React, providing a responsive and dynamic user experience.
+- **React Data Grid**: The search results are displayed in a highly customizable and interactive data grid, allowing users to sort, filter, and manage their search results efficiently.
 
-## Expanding the ESLint configuration
+### 2. Full-Text Inverted Index + SQLite Data Persistence
+- **Full-Text Inverted Index**: The application employs a full-text inverted index to enable fast and accurate search across local files. This indexing mechanism ensures that search queries are processed quickly, even with large datasets.
+- **SQLite Data Persistence**: All indexed data and search metadata are stored in an SQLite database, ensuring reliable and efficient data persistence. SQLite's lightweight nature makes it ideal for local file search applications.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 3. BERT + FAISS for Natural Language Processing and Ranking
+- **BERT**: The application utilizes BERT (Bidirectional Encoder Representations from Transformers) for natural language understanding, enabling it to interpret complex search queries and provide relevant results.
+- **FAISS**: FAISS (Facebook AI Similarity Search) is used for efficient similarity search and ranking of search results. This ensures that the most relevant files are presented to the user based on the context of their query.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Conclusion
+Your Things is a cutting-edge local file searcher that combines the power of Electron, React, and advanced NLP techniques to deliver a fast, accurate, and user-friendly search experience. Whether you're searching through large datasets or looking for specific files, Your Things is designed to meet your needs with precision and efficiency.

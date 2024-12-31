@@ -1,0 +1,29 @@
+/* 确保父容器占满整个窗口 */
+.app-container {
+  position: relative; /* 父容器相对定位 */
+  min-height: 100vh; /* 最小高度为视口高度 */
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 60px; /* 为状态栏留出空间 */
+  box-sizing: border-box; /* 防止内边距导致溢出 */
+  overflow-x: hidden; /* 隐藏横向溢出内容 */
+}
+
+.status-bar {
+  position: absolute; /* 绝对定位 */
+  bottom: 0; /* 距离底部 0 */
+  left: 0; /* 距离左侧 0 */
+  width: 100%; /* 占据整个宽度 */
+  background-color: #2d3748; /* 深色背景 */
+  color: white; /* 白色文字 */
+  padding: 10px 20px; /* 内边距 */
+  font-size: 14px; /* 字体大小 */
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* 顶部阴影 */
+  z-index: 1000; /* 确保在最上层 */
+  box-sizing: border-box; /* 防止内边距导致溢出 */
+}
+
+.folder-path {
+  color: #63b3ed; /* 高亮文件夹路径 */
+  font-weight: bold; /* 加粗 */
+}

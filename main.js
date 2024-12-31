@@ -5,8 +5,43 @@ const {
   Menu,
   nativeImage,
   Notification,
+  ipcMain,
 } = require("electron/main");
+
 const path = require("node:path");
+const fs = require("node:fs/promises");
+
+/**
+ * 按照文件名搜索
+ * @param {string} dirPath - 路径
+ * @param {string} text - 文本
+ * @returns {Promise<{filename: string, parentPath: string, fullPath: string}>}
+ */
+async function searchByFilename(dirPath, text) {
+  const results = [];
+
+  const searchDirectory = async (currentPath) => {
+    const files = await fs.readdir(currentPath);
+
+    for (const file of files) {
+      const filePath = path.join(currentPath, file);
+
+      const stat = await fs.stat(filePath);
+      if (stat.isDirectory()) {
+        await searchDirectory(filePath); // 递归搜索子目录
+      } else if (file.includes(text)) {
+        results.push({
+          filename: file,
+          parentPath: currentPath,
+          fullPath: path.join(currentPath, file),
+        });
+      }
+    }
+  };
+
+  await searchDirectory(dirPath);
+  return results;
+}
 
 // 每秒启动索引
 let index = 0;
@@ -29,12 +64,17 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  ipcMain.handle("search-by-filename", async (event, path, text) => {
+    return await searchByFilename(path, text);
+  });
+
   if (process.env.NODE_ENV === "development") {
     mainWindow.loadURL("http://localhost:5173/");
   } else {
     mainWindow.loadFile("index.html");
   }
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
@@ -70,7 +110,12 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(() => {
-    const icon = nativeImage.createFromPath(path.join(__dirname, process.env.NODE_ENV === "development" ? "public/tray.png": "tray.png"));
+    const icon = nativeImage.createFromPath(
+      path.join(
+        __dirname,
+        process.env.NODE_ENV === "development" ? "public/tray.png" : "tray.png"
+      )
+    );
     tray = new Tray(icon);
     const contextMenu = Menu.buildFromTemplate([
       {

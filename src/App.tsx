@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+
+declare global {
+  interface Window {
+    electronAPI: {
+      searchByFilename: (path: string, text: string) => Promise<FileResult[]>;
+    };
+  }
+}
+
+interface FileResult {
+  filename: string;
+  parentPath: string;
+  fullPath: string;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [text, $text] = useState("");
+
+  const [searchResult, $searchResult] = useState<FileResult[]>([]);
+
+  const [searchProcess, $searchProcess] = useState<string>("");
+
+  const handleSearch: React.MouseEventHandler<HTMLFormElement> = async (ev) => {
+    ev.preventDefault();
+    let res = await window.electronAPI.searchByFilename(".", text);
+    console.log("ipc", res);
+    $searchResult(res);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <form onSubmit={handleSearch}>
+        <input value={text} onChange={(ev) => $text(ev.target.value)}></input>
+        <button type="submit">搜索</button>
+      </form>
+      {searchProcess && <div>正在搜索： {searchProcess}</div>}
+      <table>
+        <tbody>
+          {searchResult.map((x) => (
+            <tr key={x.fullPath}>
+              <td>{x.fullPath}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

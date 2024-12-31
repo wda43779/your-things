@@ -1,18 +1,21 @@
-import json
+# Filename: script.sql
+# Author: wjw
+# Description: make index and save to database
 
-import pymysql
+import json
 import os
 from pathlib import Path
 from datetime import datetime
 import jieba
 import jieba.analyse
 import re
+import sqlite3
 
-from pymysql.cursors import Cursor
+from .constants import DB_PATH
 
 
 # 获取所有的文件信息(不包括文件内容),并写入数据库
-def get_all_files(connection,path):
+def get_all_files(connection: sqlite3.Connection,path):
     cursor = connection.cursor()
 
     # 定义要搜索的文件类型
@@ -24,7 +27,6 @@ def get_all_files(connection,path):
     # 定义一个字典列表来存储文件信息，将列表信息写入数据库。
     files_info = []
     files_content = []
-    # 遍历D盘下的所有文件和文件夹
     id = 0
     for file_path in d_drive_path.rglob('*'):
         # 检查是否是文件以及文件扩展名是否是我们想要的类型
@@ -62,7 +64,7 @@ def get_all_files(connection,path):
                 'tag':tag
             })
     print('开始写入文件信息')
-    insert_template = "insert into files (id,file_name,file_type,file_path,create_time,update_time,tag) values (%s,%s,%s,%s,%s,%s,%s);"
+    insert_template = "insert into files (id,file_name,file_type,file_path,create_time,update_time,tag) values (?,?,?,?,?,?,?);"
     for file_info in files_info:
         cursor.execute(insert_template,
                        (file_info['id'],
@@ -76,13 +78,14 @@ def get_all_files(connection,path):
     connection.commit()
     cursor.close()
     print('文件信息写入完成')
-    # words_and_re_sort(files_content,connection)
+    return files_content
+    # words_and_re_sort(connection, files_content):
 
 
 
 
 # 生成词典和倒排序结构
-def words_and_re_sort(files_content,connection):
+def words_and_re_sort(connection: sqlite3.Connection, files_content):
     seg_lists = []
     word_list = set()
     for content in files_content:
@@ -158,18 +161,15 @@ def query_by_update_time(connection,update_time_begin,update_time_dl):
     result = cursor.fetchall()
     return result
 
+
+def main():
+    con = sqlite3.connect(DB_PATH)
+    cur = con.cursor()
+    files_content = get_all_files(con, ".")
+    words_and_re_sort(con, files_content, )
+    con.close()
+
 if __name__ == '__main__':
-    connection = pymysql.connect(
-        host='localhost',
-        port=3306,
-        user='root',
-        passwd='wswjwdsg2',
-        db='files_db',
-    )
-    '''
-    path = 'C:\\A\\data\\D'
-    get_all_files(connection,path)
-    '''
     # 查询测试
     # print(query_by_word(connection,word='被'))
     # print(query_by_tag(connection,tag='"算法"'))
@@ -177,10 +177,5 @@ if __name__ == '__main__':
     # print(query_by_file_type(connection,file_type='.txt'))
     # print(query_by_create_time(connection,create_time_begin=datetime(2024,12,20),create_time_dl=datetime(2024,12,24)))
     # print(query_by_update_time(connection,update_time_begin=datetime(2024,12,20),update_time_dl=datetime(2024,12,30)))
-
-    connection.close()
-
-
-
-
+    main()
 

@@ -11,7 +11,7 @@ import jieba.analyse
 import re
 import sqlite3
 
-from .constants import DB_PATH
+from constants import DB_PATH
 
 
 # 获取所有的文件信息(不包括文件内容),并写入数据库

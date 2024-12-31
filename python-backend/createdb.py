@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from .constants import DB_PATH 
+from constants import DB_PATH 
 
 SQL_FILE_PATH = 'ddl.sql'
 

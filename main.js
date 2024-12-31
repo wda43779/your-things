@@ -11,12 +11,11 @@ const {
 const path = require("node:path");
 const fs = require("node:fs/promises");
 const { spawn } = require("node:child_process");
-const { app } = require("electron");
+const electron = require("electron");
 
 app.getFileIcon = (path) => {
   return nativeImage.createFromPath(path);
 };
-
 
 const searchPy = (text) => {
 
@@ -116,12 +115,12 @@ async function searchByFilename(dirPath, text) {
   return results;
 }
 
-// 每10秒启动索引
+// 每10分钟启动索引
 let intervalId = 0;
 function indexer() {
   intervalId = setInterval(() => {
     indexPy()
-  }, 60*1000);
+  }, 60*1000*10);
 }
 function exitIndexer() {
   clearInterval(intervalId);

@@ -18,6 +18,10 @@ from constants import DB_PATH
 def get_all_files(connection: sqlite3.Connection,path):
     cursor = connection.cursor()
 
+    cursor.execute("DELETE FROM files")
+    cursor.execute("DELETE FROM words")
+    cursor.execute("DELETE FROM re_sort")
+
     # 定义要搜索的文件类型
     file_types = {'.txt', '.docx', '.pdf'}
 
@@ -105,17 +109,22 @@ def words_and_re_sort(connection: sqlite3.Connection, files_content):
     id_word = 0
     for word2 in word_list:
         id_word = id_word + 1
-        cursor.execute('insert into words (id,word) values (%s,%s)',(id_word,word2))
+        cursor.execute('insert into words (id,word) values (?,?)',(id_word,word2))
     # 生成倒排索引(file_id,word_id)
     file_id: int = 0
     for seg_list in seg_lists:
         file_id:int = file_id + 1
         for word3 in seg_list:
-           cursor.execute('select id from words where word = (%s)',word3)
+            # print(word3)
+            cursor.execute('select id from words where word = ?',(word3,))
+ 
+            word_id = cursor.fetchone()[0]
+ 
+            # print("word_id=", word_id)
+            # print("word3=", word3)
+            # print("file_id=", file_id)
+            cursor.execute('insert into re_sort (file_id,word_id) values (?,?) ON CONFLICT (file_id,word_id) DO NOTHING',(file_id,word_id))
 
-           word_id, *_ = cursor.fetchone()
-           print(word_id,file_id)
-           cursor.execute('insert into re_sort (file_id,word_id) values (%s,%s) ',(file_id,word_id))
     connection.commit()
     cursor.close()
 
@@ -132,7 +141,7 @@ def query_by_word(connection,word):
     cursor: Cursor = connection.cursor()
     cursor.execute('select files.* from files where files.id in '
                    '(select re_sort.file_id from re_sort where re_sort.word_id in '
-                   '(select words.id from words where words.word = (%s)))',word)
+                   '(select words.id from words where words.word = (?)))',(word, ))
     result = cursor.fetchall()
     return result
 def query_by_tag(connection,tag):
@@ -169,13 +178,19 @@ def main():
     words_and_re_sort(con, files_content, )
     con.close()
 
-if __name__ == '__main__':
-    # 查询测试
-    # print(query_by_word(connection,word='被'))
+def search_test():
+    con = sqlite3.connect(DB_PATH)
+    print(query_by_word(con,word='一下站'))
     # print(query_by_tag(connection,tag='"算法"'))
     # print(query_by_file_name(connection,file_name='1.txt'))
     # print(query_by_file_type(connection,file_type='.txt'))
     # print(query_by_create_time(connection,create_time_begin=datetime(2024,12,20),create_time_dl=datetime(2024,12,24)))
     # print(query_by_update_time(connection,update_time_begin=datetime(2024,12,20),update_time_dl=datetime(2024,12,30)))
+    con.close()
+    
+
+
+if __name__ == '__main__':
     main()
+    # search_test()
 

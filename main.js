@@ -10,6 +10,74 @@ const {
 
 const path = require("node:path");
 const fs = require("node:fs/promises");
+const { spawn } = require("node:child_process");
+
+const searchPy = (text) => {
+  const pythonScriptPath = "path/to/your_script.py";
+
+  const res = new Promise((resolve, reject) => {
+    // 启动 Python 脚本
+    let pythonLoc =
+      process.platform === "win32"
+        ? path.join(__dirname, "backend/env/Scripts/python.exe")
+        : path.join(__dirname, "backend/env/bin/python");
+    const pythonProcess = spawn(pythonLoc, ["backend/search.py", text]);
+
+    let outputs = "";
+    pythonProcess.stdout.on("data", (data) => {
+      outputs += data;
+    });
+
+    let errors = "";
+    pythonProcess.stderr.on("data", (data) => {
+      errors += data;
+    });
+
+    pythonProcess.on("close", (code) => {
+      console.log(`Python script exited with code ${code}`);
+      if (code === 0) {
+        resolve(outputs);
+      } else {
+        reject(errors);
+      }
+    });
+  });
+  return res;
+};
+
+const indexPy = (text) => {
+  const pythonScriptPath = "path/to/your_script.py";
+
+  const res = new Promise((resolve, reject) => {
+    // 启动 Python 脚本
+    let pythonLoc =
+      process.platform === "win32"
+        ? path.join(__dirname, "backend/env/Scripts/python.exe")
+        : path.join(__dirname, "backend/env/bin/python");
+    const pythonProcess = spawn(pythonLoc, ["backend/index.py"]);
+
+    let outputs = "";
+    pythonProcess.stdout.on("data", (data) => {
+      outputs += data;
+    });
+
+    let errors = "";
+    pythonProcess.stderr.on("data", (data) => {
+      errors += data;
+    });
+
+    pythonProcess.on("close", (code) => {
+      console.log(`Python script exited with code ${code}`);
+      if (code === 0) {
+        resolve(outputs);
+      } else {
+        reject(errors);
+      }
+    });
+  });
+  return res;
+};
+
 
 /**
  * 按照文件名搜索
@@ -67,6 +135,9 @@ function createWindow() {
 
   ipcMain.handle("search-by-filename", async (event, path, text) => {
     return await searchByFilename(path, text);
+  });
+  ipcMain.handle("search-py", async (event, text) => {
+    return await searchPy(text);
   });
 
   if (process.env.NODE_ENV === "development") {

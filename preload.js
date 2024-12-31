@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
   searchByFilename: (title, text) => ipcRenderer.invoke("search-by-filename", title, text),
+  searchPy: (text) => ipcRenderer.invoke("search-py", text),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

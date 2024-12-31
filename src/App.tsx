@@ -5,6 +5,7 @@ declare global {
   interface Window {
     electronAPI: {
       searchByFilename: (path: string, text: string) => Promise<FileResult[]>;
+      searchPy: (text: string) => Promise<string>;
     };
   }
 }
@@ -19,12 +20,19 @@ function App() {
   const [text, $text] = useState("");
 
   const [searchResult, $searchResult] = useState<FileResult[]>([]);
+  const [searchResultPy, $searchResultPy] = useState<string>("");
+
 
   // const [searchProcess, $searchProcess] = useState<string>("");
   const [searching, $searching] = useState<boolean>(false);
+  const [searchingPy, $searchingPy] = useState<boolean>(false);
+
 
   const handleSearch: React.MouseEventHandler<HTMLFormElement> = async (ev) => {
     ev.preventDefault();
+
+    searchPass2();
+
     $searching(true);
     let res: FileResult[] = [];
     try {
@@ -36,7 +44,21 @@ function App() {
     }
 
     $searchResult(res);
+    
   };
+
+  const searchPass2 = async () => {
+    $searchingPy(true);
+    let res: string = ""
+    try {
+      res = await window.electronAPI.searchPy(text);
+    } catch (error) {
+      console.log("error searching", error);
+    } finally {
+      $searchingPy(false);
+    }
+    $searchResultPy(res);
+  }
 
   return (
     <>
@@ -56,6 +78,7 @@ function App() {
           ))}
         </tbody>
       </table>
+      {searchResultPy}
     </>
   );
 }

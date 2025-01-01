@@ -32,7 +32,7 @@ function ResultGrid({
       key: "content",
       name: "内容",
   
-      renderCell: ({ row }) => {
+      renderCell: ({ row }: {row: SearchResult}) => {
         return (
           <div style={{ maxWidth: "300px" }}>
             <Highlighter
@@ -50,7 +50,7 @@ function ResultGrid({
       name: "标签",
       renderCell: ({ row }: any) => (
         <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", width: "400px" }}>
-          {row.tags.map((tag, index) => (
+          {row.tags.map((tag: string, index: number) => (
             <div
               key={index}
               style={{

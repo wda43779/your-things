@@ -33,7 +33,7 @@ function App() {
       let res = await window.electronAPI.searchPy(text);
       live = JSON.parse(res);
       console.log("search result", live);
-      $searchResult(live)
+      $searchResult(live);
     } catch (error) {
       console.log("error searching", error);
     } finally {
@@ -111,7 +111,9 @@ function App() {
           个结果
         </div>
       )}
-      <ResultGrid rows={searchResult} search={text}></ResultGrid>
+      <div style={{ height: "calc(100vh - 200px)" }}>
+        <ResultGrid rows={searchResult} search={text}></ResultGrid>
+      </div>
       {/* <table>
         <tbody>
           {searchResult.map((x) => (

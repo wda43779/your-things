@@ -71,6 +71,7 @@ function ResultGrid({
 
   return (
     <DataGrid
+    style={{height: "100%"}}
       columns={columns}
       rows={rows}
       rowKeyGetter={rowKeyGetter}

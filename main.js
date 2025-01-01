@@ -18,14 +18,20 @@ app.getFileIcon = (path) => {
   return nativeImage.createFromPath(path);
 };
 
-const searchPy = (text) => {
+const searchPy = (text, afterDate, beforeDate) => {
   const res = new Promise((resolve, reject) => {
     // 启动 Python 脚本
     let pythonLoc =
       process.platform === "win32"
         ? path.join(__dirname, "backend/env/Scripts/python.exe")
         : "./backend/env/bin/python";
-    const pythonProcess = spawn(pythonLoc, ["backend/search.py", text]);
+    console.log("searchpy=", text, afterDate, beforeDate);
+    const pythonProcess = spawn(pythonLoc, [
+      "backend/search.py",
+      text,
+      afterDate,
+      beforeDate,
+    ]);
 
     let outputs = "";
     pythonProcess.stdout.on("data", (data) => {
@@ -143,8 +149,8 @@ indexer();
 ipcMain.handle("search-by-filename", async (event, path, text) => {
   return await searchByFilename(path, text);
 });
-ipcMain.handle("search-py", async (event, text) => {
-  return await searchPy(text);
+ipcMain.handle("search-py", async (event, text, afterDate, beforeDate) => {
+  return await searchPy(text, afterDate, beforeDate);
 });
 
 let mainWindow = null;

@@ -8,7 +8,11 @@ declare global {
   interface Window {
     electronAPI: {
       searchByFilename: (path: string, text: string) => Promise<SearchResult[]>;
-      searchPy: (text: string) => Promise<string>;
+      searchPy: (
+        text: string,
+        afterDate: string,
+        beforeDate: string
+      ) => Promise<string>;
       onUpdateIndexerStatusBar: (callback: (msg: string) => void) => () => void;
     };
   }
@@ -21,6 +25,9 @@ function App() {
 
   const [searching, $searching] = useState<boolean>(false);
 
+  const [afterDate, $afterDate] = useState("2024-01-01");
+  const [beforeDate, $beforeDate] = useState("2025-02-01");
+
   // 显示高级选项
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,7 +37,7 @@ function App() {
     $searching(true);
     let live: SearchResult[] = [];
     try {
-      let res = await window.electronAPI.searchPy(text);
+      let res = await window.electronAPI.searchPy(text, afterDate, beforeDate);
       live = JSON.parse(res);
       console.log("search result", live);
       $searchResult(live);
@@ -69,15 +76,29 @@ function App() {
           <div className="options-panel">
             <div className="option">
               <label>日期范围:</label>
-              <input type="text" value={"2024-01-01"} />
+              <input
+                type="date"
+                value={afterDate}
+                onChange={(ev) => $afterDate(ev.target.value)}
+              />
               <span>至</span>
-              <input type="text" value={"2025-02-01"} />
+              <input
+                type="date"
+                value={beforeDate}
+                onChange={(ev) => $beforeDate(ev.target.value)}
+              />
             </div>
-            <div className="option">
-              <label>文件类型:</label>
-              <label><input type="checkbox" checked disabled></input>.txt</label>
-              <label><input type="checkbox" checked disabled></input>.docx</label>
-              <label><input type="checkbox" checked disabled></input>.pdf</label>
+            <div className="option" style={{ display: "flex" }}>
+              <label style={{ paddingRight: "8px" }}>文件类型:</label>
+              <label style={{ paddingRight: "8px" }}>
+                <input type="checkbox" checked disabled></input>.txt
+              </label>
+              <label style={{ paddingRight: "8px" }}>
+                <input type="checkbox" checked disabled></input>.docx
+              </label>
+              <label style={{ paddingRight: "8px" }}>
+                <input type="checkbox" checked disabled></input>.pdf
+              </label>
             </div>
           </div>
         )}

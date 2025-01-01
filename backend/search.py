@@ -5,7 +5,7 @@ import sqlite3
 from constants import DB_PATH
 
 
-def query_by_words(connection, words: str) -> list[dict]:
+def query_by_words(connection, words: str, afterDate, beforeDate) -> list[dict]:
     cursor: Cursor = connection.cursor()
 
     word_list = words.split(" ")
@@ -33,15 +33,17 @@ def query_by_words(connection, words: str) -> list[dict]:
     if not common_file_ids:
         print("[]")
         return
-    
+
     # 查询交集文件 ID 对应的文件信息
     cursor.execute(
         """
         SELECT files.file_path, files.file_name, files.file_type, files.create_time, files.update_time, files.tag
         FROM files
-        WHERE files.id IN ({})
-        """.format(",".join("?" * len(common_file_ids))),
-        tuple(common_file_ids),
+        WHERE files.id IN ({}) and files.update_time > ? and files.update_time < ?
+        """.format(
+            ",".join("?" * len(common_file_ids))
+        ),
+        tuple(common_file_ids) + (afterDate, beforeDate),
     )
     result = cursor.fetchall()
 
@@ -67,12 +69,14 @@ def query_by_words(connection, words: str) -> list[dict]:
     print(json.dumps(search_results, indent=2))
 
 
-def search(text):
+def search(text, afterDate, beforeDate):
     con = sqlite3.connect(DB_PATH)
-    query_by_words(con, text)
+    query_by_words(con, text, afterDate, beforeDate)
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         text = sys.argv[1]
-        search(text)
+        afterDate = sys.argv[2]
+        beforeDate = sys.argv[3]
+        search(text, afterDate, beforeDate)

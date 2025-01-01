@@ -6,7 +6,7 @@ declare global {
   interface Window {
     electronAPI: {
       searchByFilename: (path: string, text: string) => Promise<SearchResult[]>;
-      searchPy: (text: string) => Promise<string>;
+      searchPy: (text: string, afterDate: string, beforeDate: string) => Promise<string>;
       onUpdateIndexerStatusBar: (callback: (msg: string) => void) => () => void;
     };
   }

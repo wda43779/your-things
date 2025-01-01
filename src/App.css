@@ -102,7 +102,6 @@
 
 .option input,
 .option select {
-  width: 100%;
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -110,7 +109,7 @@
 }
 
 .option input[type="date"] {
-  width: calc(50% - 10px);
+  width: 300px;
 }
 
 .option span {

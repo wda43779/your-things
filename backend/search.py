@@ -4,9 +4,11 @@ import sys
 import sqlite3
 from constants import DB_PATH
 
+
 def query_by_word(connection, word: str) -> list[dict]:
     cursor: Cursor = connection.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT files.file_path, files.file_name, files.file_type, files.create_time, files.update_time, files.tag
         FROM files 
         WHERE files.id IN (
@@ -18,17 +20,18 @@ def query_by_word(connection, word: str) -> list[dict]:
                 WHERE words.word = ?
             )
         )
-    ''', (word,))
+    """,
+        (word,),
+    )
     result = cursor.fetchall()
 
     # Map the result to a list of dictionaries
     search_results = []
     for row in result:
-        file_loc = os.path.join(".", row[0], row[1])  # 构造文件的完整路径
+        file_loc = os.path.join(row[0])  # 构造文件的完整路径
         content = ""
-        # print(file_loc)
         if os.path.exists(file_loc):  # 检查文件是否存在
-            with open(file_loc, 'r', encoding='utf-8') as file:
+            with open(file_loc, "r", encoding="utf-8") as file:
                 content = file.read()  # 读取文件内容
         search_result = {
             "path": row[0],
@@ -43,9 +46,11 @@ def query_by_word(connection, word: str) -> list[dict]:
 
     print(json.dumps(search_results, indent=2))
 
+
 def search(text):
     con = sqlite3.connect(DB_PATH)
     query_by_word(con, text)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

@@ -69,26 +69,15 @@ function App() {
           <div className="options-panel">
             <div className="option">
               <label>日期范围:</label>
-              <input type="date" />
+              <input type="text" value={"2024-01-01"} />
               <span>至</span>
-              <input type="date" />
+              <input type="text" value={"2025-02-01"} />
             </div>
             <div className="option">
               <label>文件类型:</label>
-              <select>
-                <option value="all">全部</option>
-                <option value="pdf">PDF</option>
-                <option value="doc">Word</option>
-                <option value="xls">Excel</option>
-              </select>
-            </div>
-            <div className="option">
-              <label>排序方式:</label>
-              <select>
-                <option value="relevance">相关性</option>
-                <option value="date">日期</option>
-                <option value="name">名称</option>
-              </select>
+              <label><input type="checkbox" checked disabled></input>.txt</label>
+              <label><input type="checkbox" checked disabled></input>.docx</label>
+              <label><input type="checkbox" checked disabled></input>.pdf</label>
             </div>
           </div>
         )}

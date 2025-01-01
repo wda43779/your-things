@@ -66,7 +66,7 @@ const indexPy = () => {
 
     let outputs = "";
     rl.on('line', (line) => {
-    mainWindow.webContents.send('indexer-status-bar', line);
+    mainWindow?.webContents.send('indexer-status-bar', line);
       console.log(`py out: ${line}`);
       outputs += line + "\n";
 
@@ -133,7 +133,7 @@ let intervalId = 0;
 function indexer() {
   intervalId = setInterval(() => {
     indexPy()
-    mainWindow.webContents.send('indexer-status-bar', "索引完成");
+    mainWindow?.webContents.send('indexer-status-bar', "索引完成");
   }, 60*1000);
 }
 function exitIndexer() {
@@ -141,6 +141,14 @@ function exitIndexer() {
 }
 
 indexer();
+
+
+ipcMain.handle("search-by-filename", async (event, path, text) => {
+  return await searchByFilename(path, text);
+});
+ipcMain.handle("search-py", async (event, text) => {
+  return await searchPy(text);
+});
 
 let mainWindow = null;
 function createWindow() {
@@ -152,12 +160,7 @@ function createWindow() {
     },
   });
 
-  ipcMain.handle("search-by-filename", async (event, path, text) => {
-    return await searchByFilename(path, text);
-  });
-  ipcMain.handle("search-py", async (event, text) => {
-    return await searchPy(text);
-  });
+
 
   if (process.env.NODE_ENV === "development") {
     mainWindow.loadURL("http://localhost:5173/");

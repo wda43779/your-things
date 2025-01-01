@@ -11,6 +11,7 @@ const {
 const path = require("node:path");
 const fs = require("node:fs/promises");
 const { spawn } = require("node:child_process");
+const readline = require('node:readline');
 const electron = require("electron");
 
 app.getFileIcon = (path) => {
@@ -57,11 +58,18 @@ const indexPy = () => {
         ? path.join(__dirname, "backend/env/Scripts/python.exe")
         : path.join(__dirname, "backend/env/bin/python");
     const pythonProcess = spawn(pythonLoc, ["backend/wjw.py"]);
+    const rl = readline.createInterface({
+      input: pythonProcess.stdout,
+      output: process.stdout,
+      terminal: false
+    });
 
     let outputs = "";
-    pythonProcess.stdout.on("data", (data) => {
-      console.log(data.toString());
-      outputs += data;
+    rl.on('line', (line) => {
+    mainWindow.webContents.send('indexer-status-bar', line);
+      console.log(`py out: ${line}`);
+      outputs += line + "\n";
+
     });
 
     let errors = "";
@@ -90,37 +98,43 @@ const indexPy = () => {
  * @returns {Promise<{filename: string, parentPath: string, fullPath: string}>}
  */
 async function searchByFilename(dirPath, text) {
-  const results = [];
+  // const results = [];
 
-  const searchDirectory = async (currentPath) => {
-    const files = await fs.readdir(currentPath);
+  // const searchDirectory = async (currentPath) => {
+  //   const files = await fs.readdir(currentPath);
 
-    for (const file of files) {
-      const filePath = path.join(currentPath, file);
+  //   for (const file of files) {
+  //     const filePath = path.join(currentPath, file);
 
-      const stat = await fs.stat(filePath);
-      if (stat.isDirectory()) {
-        await searchDirectory(filePath); // 递归搜索子目录
-      } else if (file.includes(text)) {
-        results.push({
-          filename: file,
-          parentPath: currentPath,
-          fullPath: path.join(currentPath, file),
-        });
-      }
-    }
-  };
+  //     const stat = await fs.stat(filePath);
+  //     if (stat.isDirectory()) {
+  //       await searchDirectory(filePath); // 递归搜索子目录
+  //     } else if (file.includes(text)) {
+  //       results.push({
+  //         path: currentPath,
+  //         name: file,
+  //         ext: path.extname(file),
+  //         content: await (fs.readFile(filePath, 'utf8'))[100],
+  //         createTime: stat.birthtime,
+  //         updateTime: stat.mtime,
+  //         tags: [],
+  //       });
+  //     }
+  //   }
+  // };
 
-  await searchDirectory(dirPath);
-  return results;
+  // await searchDirectory(dirPath);
+  // return results;
+  return [];
 }
 
-// 每10分钟启动索引
+// 每1分钟启动索引
 let intervalId = 0;
 function indexer() {
   intervalId = setInterval(() => {
     indexPy()
-  }, 60*1000*10);
+    mainWindow.webContents.send('indexer-status-bar', "索引完成");
+  }, 60*1000);
 }
 function exitIndexer() {
   clearInterval(intervalId);

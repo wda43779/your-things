@@ -91,13 +91,13 @@ function App() {
             <div className="option" style={{ display: "flex" }}>
               <label style={{ paddingRight: "8px" }}>文件类型:</label>
               <label style={{ paddingRight: "8px" }}>
-                <input type="checkbox" checked disabled></input>.txt
+                <input type="checkbox" checked></input>.txt
               </label>
               <label style={{ paddingRight: "8px" }}>
-                <input type="checkbox" checked disabled></input>.docx
+                <input type="checkbox" checked></input>.docx
               </label>
               <label style={{ paddingRight: "8px" }}>
-                <input type="checkbox" checked disabled></input>.pdf
+                <input type="checkbox" checked></input>.pdf
               </label>
             </div>
           </div>

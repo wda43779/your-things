@@ -111,7 +111,7 @@ function App() {
           个结果
         </div>
       )}
-      <ResultGrid rows={searchResult}></ResultGrid>
+      <ResultGrid rows={searchResult} search={text}></ResultGrid>
       {/* <table>
         <tbody>
           {searchResult.map((x) => (

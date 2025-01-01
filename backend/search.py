@@ -3,13 +3,13 @@ import json
 import sys
 import sqlite3
 from constants import DB_PATH
-import jieba
+# import jieba
 
 
 def query_by_words(connection, words: str) -> list[dict]:
     cursor: Cursor = connection.cursor()
 
-    word_list = jieba.cut_for_search(words)
+    word_list = words.split(" ")
     file_id_sets = []
 
     for word in word_list:
@@ -29,10 +29,11 @@ def query_by_words(connection, words: str) -> list[dict]:
         file_ids = {row[0] for row in cursor.fetchall()}
         file_id_sets.append(file_ids)
 
-    common_file_ids = set.intersection(*file_id_sets) if file_id_sets else set()
+    common_file_ids = set.union(*file_id_sets) if file_id_sets else set()
 
     if not common_file_ids:
         print("[]")
+        return
     
     # 查询交集文件 ID 对应的文件信息
     cursor.execute(

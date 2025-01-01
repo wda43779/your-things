@@ -33,10 +33,13 @@ def get_all_files(connection: sqlite3.Connection,path):
     files_content = []
     id = 0
     for file_path in d_drive_path.rglob('*'):
+        if id % 100 == 0:
+            print("indexing: ", file_path)
         # 检查是否是文件以及文件扩展名是否是我们想要的类型
         if file_path.is_file() and file_path.suffix.lower() in file_types:
 
             file_info = os.stat(file_path)
+
             # 文件内容,不会写入数据库
             with open(file_path, 'r', encoding='utf-8') as file:
                 file_content = file.read(10000)
@@ -67,7 +70,7 @@ def get_all_files(connection: sqlite3.Connection,path):
                 'update_time': updated_time,
                 'tag':tag
             })
-    print('开始写入文件信息')
+    print('write files mate data to database')
     insert_template = "insert into files (id,file_name,file_type,file_path,create_time,update_time,tag) values (?,?,?,?,?,?,?);"
     for file_info in files_info:
         cursor.execute(insert_template,
@@ -81,7 +84,7 @@ def get_all_files(connection: sqlite3.Connection,path):
                         ))
     connection.commit()
     cursor.close()
-    print('文件信息写入完成')
+    print('write files mate data to database done')
     return files_content
     # words_and_re_sort(connection, files_content):
 
@@ -92,8 +95,8 @@ def get_all_files(connection: sqlite3.Connection,path):
 def words_and_re_sort(connection: sqlite3.Connection, files_content):
     seg_lists = []
     word_list = set()
+    print("creating re sort structure")
     for content in files_content:
-
         seg_list = jieba.cut(content,cut_all=False) # 精确模式,并过滤掉标点空格和字符
         filtered_seg_list = [re.sub(r'[^\w]+', '', i) for i in seg_list if i.strip()]
         seg_lists.append(filtered_seg_list)
@@ -104,6 +107,7 @@ def words_and_re_sort(connection: sqlite3.Connection, files_content):
             word_list.add(word1)
 
     # 生成词典
+    print("writing index to database")
     cursor: Cursor = connection.cursor()
 
     id_word = 0
@@ -127,6 +131,8 @@ def words_and_re_sort(connection: sqlite3.Connection, files_content):
 
     connection.commit()
     cursor.close()
+    print("writing index to database done")
+
 
 
 

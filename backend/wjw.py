@@ -110,19 +110,19 @@ def words_and_re_sort(connection: sqlite3.Connection, files_content):
     print("writing index to database")
     cursor: Cursor = connection.cursor()
 
+    dict_word_id ={}
     id_word = 0
     for word2 in word_list:
         id_word = id_word + 1
+        dict_word_id[word2]= id_word
         cursor.execute('insert into words (id,word) values (?,?)',(id_word,word2))
+    
     # 生成倒排索引(file_id,word_id)
     file_id: int = 0
     for seg_list in seg_lists:
         file_id:int = file_id + 1
         for word3 in seg_list:
-            # print(word3)
-            cursor.execute('select id from words where word = ?',(word3,))
- 
-            word_id = cursor.fetchone()[0]
+            word_id = dict_word_id[word3]
  
             # print("word_id=", word_id)
             # print("word3=", word3)

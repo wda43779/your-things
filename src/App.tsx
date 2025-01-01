@@ -2,64 +2,43 @@ import { useState } from "react";
 import "./App.css";
 import { ResultGrid } from "./ResultGrid";
 import { IndexerStatusBar } from "./IndexerStatusBar";
+import { SearchResult } from "./SearchResult";
 
 declare global {
   interface Window {
     electronAPI: {
-      searchByFilename: (path: string, text: string) => Promise<FileResult[]>;
+      searchByFilename: (path: string, text: string) => Promise<SearchResult[]>;
       searchPy: (text: string) => Promise<string>;
+      onUpdateIndexerStatusBar: (callback: (msg: string) => void) => () => void;
     };
   }
-}
-
-interface FileResult {
-  filename: string;
-  parentPath: string;
-  fullPath: string;
 }
 
 function App() {
   const [text, $text] = useState("");
 
-  const [searchResult, $searchResult] = useState<FileResult[]>([]);
-  const [searchResultPy, $searchResultPy] = useState<string>("");
+  const [searchResult, $searchResult] = useState<SearchResult[]>([]);
 
-  // const [searchProcess, $searchProcess] = useState<string>("");
   const [searching, $searching] = useState<boolean>(false);
-  const [searchingPy, $searchingPy] = useState<boolean>(false);
 
-  // 高级选项
+  // 显示高级选项
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSearch: React.MouseEventHandler<HTMLFormElement> = async (ev) => {
     ev.preventDefault();
 
-    searchPass2();
-
     $searching(true);
-    let res: FileResult[] = [];
+    let live: SearchResult[] = [];
     try {
-      res = await window.electronAPI.searchByFilename(".", text);
+      let res = await window.electronAPI.searchPy(text);
+      live = JSON.parse(res);
+      console.log("search result", live);
+      $searchResult(live)
     } catch (error) {
       console.log("error searching", error);
     } finally {
       $searching(false);
     }
-
-    $searchResult(res);
-  };
-
-  const searchPass2 = async () => {
-    $searchingPy(true);
-    let res: string = "";
-    try {
-      res = await window.electronAPI.searchPy(text);
-    } catch (error) {
-      console.log("error searching", error);
-    } finally {
-      $searchingPy(false);
-    }
-    $searchResultPy(res);
   };
 
   return (
@@ -74,15 +53,9 @@ function App() {
             className="search-input"
           />
           <button className="search-button" type="submit">
-            搜索
+            {searching ? <div className="loader"></div> : "搜索"}
           </button>
         </div>
-
-        {searching && (
-          <div style={{ height: "64px" }}>
-            <div className="loader"></div>
-          </div>
-        )}
       </form>{" "}
       <div className="advanced-options-container">
         <button
@@ -120,23 +93,26 @@ function App() {
           </div>
         )}
       </div>
-      <div style={{ height: "8px"}}></div>
-      <div
-        style={{
-          fontSize: "16px",
-          fontWeight: "bold",
-          color: "#2d3748",
-          backgroundColor: "#f7fafc",
-          padding: "10px",
-          borderRadius: "8px",
-          marginBottom: "16px",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        找到了 <span style={{ color: "#4299e1" }}>2</span> 个结果
-      </div>
-      <ResultGrid></ResultGrid>
-      <table>
+      <div style={{ height: "8px" }}></div>
+      {searchResult.length > 0 && (
+        <div
+          style={{
+            fontSize: "16px",
+            fontWeight: "bold",
+            color: "#2d3748",
+            backgroundColor: "#f7fafc",
+            padding: "10px",
+            borderRadius: "8px",
+            marginBottom: "16px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          找到了 <span style={{ color: "#4299e1" }}>{searchResult.length}</span>{" "}
+          个结果
+        </div>
+      )}
+      <ResultGrid rows={searchResult}></ResultGrid>
+      {/* <table>
         <tbody>
           {searchResult.map((x) => (
             <tr key={x.fullPath}>
@@ -144,8 +120,8 @@ function App() {
             </tr>
           ))}
         </tbody>
-      </table>
-      {searchResultPy}
+      </table> */}
+      {/* {searchResultPy} */}
       <IndexerStatusBar />
     </>
   );

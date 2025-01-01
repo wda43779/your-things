@@ -1,31 +1,42 @@
 import { useEffect, useState } from "react";
 import "./IndexerStatusBar.css"
+import { SearchResult } from "./SearchResult";
+
+declare global {
+  interface Window {
+    electronAPI: {
+      searchByFilename: (path: string, text: string) => Promise<SearchResult[]>;
+      searchPy: (text: string) => Promise<string>;
+      onUpdateIndexerStatusBar: (callback: (msg: string) => void) => () => void;
+    };
+  }
+}
+
 
 const IndexerStatusBar = () => {
-  const [folderPath, setFolderPath] = useState("C:/Users/Example/Documents");
-  const [progress, setProgress] = useState(0);
+  const [msg, $msg] = useState("索引完成");
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFolderPath((prevPath) => prevPath + "/subfolder");
-      setProgress((prevProgress) => (prevProgress < 100 ? prevProgress + 10 : 0));
-    }, 3000);
-
-    return () => clearInterval(interval);
+    let cancel = window.electronAPI.onUpdateIndexerStatusBar((msg) => {
+      $msg(msg);
+    });
+    return () => {
+      cancel();
+    }
   }, []);
 
+
   return (
-    <div className="status-bar">
+    <>
+    <div style={{height: "60px"}}></div>
+    <div style={{ position: "relative"}}>
+      <div className="status-bar">
       <div>
-        正在索引 <span className="folder-path">{folderPath}</span> 文件夹
-      </div>
-      <div className="progress-bar">
-        <div
-          className="progress"
-          style={{ width: `${progress}%` }}
-        />
+        {msg}
       </div>
     </div>
+    </div>
+    </>
   );
 };
 export { IndexerStatusBar };

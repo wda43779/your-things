@@ -11,7 +11,7 @@ const {
 const path = require("node:path");
 const fs = require("node:fs/promises");
 const { spawn } = require("node:child_process");
-const readline = require('node:readline');
+const readline = require("node:readline");
 const electron = require("electron");
 
 app.getFileIcon = (path) => {
@@ -19,13 +19,12 @@ app.getFileIcon = (path) => {
 };
 
 const searchPy = (text) => {
-
   const res = new Promise((resolve, reject) => {
     // 启动 Python 脚本
     let pythonLoc =
       process.platform === "win32"
         ? path.join(__dirname, "backend/env/Scripts/python.exe")
-        : path.join(__dirname, "backend/env/bin/python");
+        : "./backend/env/bin/python";
     const pythonProcess = spawn(pythonLoc, ["backend/search.py", text]);
 
     let outputs = "";
@@ -56,20 +55,19 @@ const indexPy = () => {
     let pythonLoc =
       process.platform === "win32"
         ? path.join(__dirname, "backend/env/Scripts/python.exe")
-        : path.join(__dirname, "backend/env/bin/python");
+        : "./backend/env/bin/python";
     const pythonProcess = spawn(pythonLoc, ["backend/indexer.py"]);
     const rl = readline.createInterface({
       input: pythonProcess.stdout,
       output: process.stdout,
-      terminal: false
+      terminal: false,
     });
 
     let outputs = "";
-    rl.on('line', (line) => {
-    mainWindow?.webContents.send('indexer-status-bar', line);
+    rl.on("line", (line) => {
+      mainWindow?.webContents.send("indexer-status-bar", line);
       console.log(`py out: ${line}`);
       outputs += line + "\n";
-
     });
 
     let errors = "";
@@ -89,7 +87,6 @@ const indexPy = () => {
   });
   return res;
 };
-
 
 /**
  * 按照文件名搜索
@@ -132,16 +129,16 @@ async function searchByFilename(dirPath, text) {
 let intervalId = 0;
 function indexer() {
   intervalId = setInterval(() => {
-    indexPy()
-    mainWindow?.webContents.send('indexer-status-bar', "索引完成");
-  }, 60*1000);
+    mainWindow?.webContents.send("indexer-status-bar", "开始索引");
+    indexPy();
+    mainWindow?.webContents.send("indexer-status-bar", "索引完成");
+  }, 60 * 1000);
 }
 function exitIndexer() {
   clearInterval(intervalId);
 }
 
 indexer();
-
 
 ipcMain.handle("search-by-filename", async (event, path, text) => {
   return await searchByFilename(path, text);
@@ -160,14 +157,14 @@ function createWindow() {
     },
   });
 
-
-
   if (process.env.NODE_ENV === "development") {
     mainWindow.loadURL("http://localhost:5173/");
   } else {
     mainWindow.loadFile("index.html");
   }
-  mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools();
+  }
   mainWindow.on("closed", () => {
     mainWindow = null;
   });

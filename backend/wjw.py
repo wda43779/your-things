@@ -177,12 +177,7 @@ def query_by_update_time(connection,update_time_begin,update_time_dl):
     return result
 
 
-def main():
-    con = sqlite3.connect(DB_PATH)
-    cur = con.cursor()
-    files_content = get_all_files(con, ".")
-    words_and_re_sort(con, files_content, )
-    con.close()
+
 
 def search_test():
     con = sqlite3.connect(DB_PATH)
@@ -197,6 +192,6 @@ def search_test():
 
 
 if __name__ == '__main__':
-    main()
+    pass
     # search_test()
 

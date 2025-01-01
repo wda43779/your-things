@@ -125,14 +125,14 @@ async function searchByFilename(dirPath, text) {
   return [];
 }
 
-// 每1分钟启动索引
+// 每10分钟启动索引
 let intervalId = 0;
 function indexer() {
   intervalId = setInterval(() => {
     mainWindow?.webContents.send("indexer-status-bar", "开始索引");
     indexPy();
     mainWindow?.webContents.send("indexer-status-bar", "索引完成");
-  }, 60 * 1000);
+  }, 10* 60 * 1000);
 }
 function exitIndexer() {
   clearInterval(intervalId);

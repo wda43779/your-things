@@ -3,7 +3,6 @@ import json
 import sys
 import sqlite3
 from constants import DB_PATH
-# import jieba
 
 
 def query_by_words(connection, words: str) -> list[dict]:

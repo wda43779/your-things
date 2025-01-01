@@ -1,20 +1,10 @@
 import "react-data-grid/lib/styles.css";
-import "./ResultGrid.css"
+import "./ResultGrid.css";
 
 import DataGrid, { SelectColumn } from "react-data-grid";
 import { useState } from "react";
 import Highlighter from "react-highlight-words";
-
-
-interface SearchResult {
-  path: string;
-  name: string;
-  ext: string;
-  content: string;
-  createTime: string;
-  updateTime: string;
-  tags: string[];
-}
+import { SearchResult } from "./SearchResult";
 
 const columns = [
   SelectColumn,
@@ -24,16 +14,20 @@ const columns = [
     name: "文件名",
   },
   { key: "ext", name: "后缀名" },
-  { key: "content", name: "内容"
-    ,renderCell: ({row}) => {
-      return <Highlighter
-      highlightClassName="highlight-content"
-      searchWords={["web"]}
-      autoEscape={true}
-      textToHighlight={row.content}
-    />
-    }
-   },
+  {
+    key: "content",
+    name: "内容",
+    renderCell: ({ row }) => {
+      return (
+        <Highlighter
+          highlightClassName="highlight-content"
+          searchWords={["web"]}
+          autoEscape={true}
+          textToHighlight={row.content}
+        />
+      );
+    },
+  },
   {
     key: "tags",
     name: "标签",
@@ -82,7 +76,7 @@ webpack Playwright Testing Library
   },
 ];
 
-function ResultGrid() {
+function ResultGrid({ rows }: { rows: SearchResult[] }) {
   const [selectedRows, setSelectedRows] = useState(
     (): ReadonlySet<string> => new Set()
   );

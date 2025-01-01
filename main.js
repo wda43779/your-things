@@ -57,7 +57,7 @@ const indexPy = () => {
       process.platform === "win32"
         ? path.join(__dirname, "backend/env/Scripts/python.exe")
         : path.join(__dirname, "backend/env/bin/python");
-    const pythonProcess = spawn(pythonLoc, ["backend/wjw.py"]);
+    const pythonProcess = spawn(pythonLoc, ["backend/indexer.py"]);
     const rl = readline.createInterface({
       input: pythonProcess.stdout,
       output: process.stdout,

@@ -18,6 +18,11 @@ declare global {
   }
 }
 
+const Checkbox = () => {
+  const [value, $value] = useState(true);
+  return <input type="checkbox" checked={value} onChange={(e) => $value(e.target.checked)}></input>;
+};
+
 function App() {
   const [text, $text] = useState("");
 
@@ -91,13 +96,13 @@ function App() {
             <div className="option" style={{ display: "flex" }}>
               <label style={{ paddingRight: "8px" }}>文件类型:</label>
               <label style={{ paddingRight: "8px" }}>
-                <input type="checkbox" checked></input>.txt
+                <Checkbox />.txt
               </label>
               <label style={{ paddingRight: "8px" }}>
-                <input type="checkbox" checked></input>.docx
+              <Checkbox />.docx
               </label>
               <label style={{ paddingRight: "8px" }}>
-                <input type="checkbox" checked></input>.pdf
+              <Checkbox />.pdf
               </label>
             </div>
           </div>
